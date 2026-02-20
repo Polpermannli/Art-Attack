@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projekt Plattform</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+
+body{
+    background: linear-gradient(-45deg,#667eea,#764ba2,#6B73FF,#000DFF);
+    background-size:400% 400%;
+    animation: gradient 12s ease infinite;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+@keyframes gradient{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.container{
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.15);
+    padding:40px;
+    border-radius:20px;
+    width:95%;
+    max-width:900px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.3);
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:rgba(255,255,255,0.2);
+    color:white;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    margin-top:15px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.primary{background:white;color:#333}
+.danger{background:#ff4d4d;color:white}
+
+.hidden{display:none}
+
+.card{
+    background:rgba(255,255,255,0.2);
+    padding:15px;
+    border-radius:12px;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginView">
+<h2>🔐 Login</h2>
+<input type="text" id="loginUser" placeholder="Benutzername">
+<input type="password" id="loginPass" placeholder="Passwort">
+<button class="primary" onclick="login()">Login</button>
+<p>Noch kein Account? <a href="#" onclick="showRegister()">Registrieren</a></p>
+</div>
+
+<!-- REGISTER -->
+<div id="registerView" class="hidden">
+<h2>📝 Registrierung</h2>
+<input type="text" id="regUser" placeholder="Benutzername">
+<input type="password" id="regPass" placeholder="Passwort">
+<select id="regRole">
+<option value="user">User</option>
+<option value="admin">Admin</option>
+</select>
+<button class="primary" onclick="register()">Registrieren</button>
+<button onclick="showLogin()">Zurück</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardView" class="hidden">
+<h2>👋 Willkommen <span id="currentUser"></span></h2>
+<button onclick="logout()">Logout</button>
+
+<div id="adminSection" class="hidden">
+<h3>🗂 Benutzerverwaltung</h3>
+<div id="userList"></div>
+</div>
+
+<h3>🚀 Projekt Anmeldung</h3>
+<input type="text" id="projectName" placeholder="Projektname">
+<button class="primary" onclick="saveProject()">Speichern</button>
+
+<div id="projectList"></div>
+</div>
+
+</div>
+
+<script>
+let currentUser = null;
+
+function getUsers(){
+    return JSON.parse(localStorage.getItem("users")) || [];
+}
+
+function saveUsers(users){
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
+function register(){
+    let users = getUsers();
+    const username = regUser.value;
+    const password = regPass.value;
+    const role = regRole.value;
+
+    if(users.find(u => u.username === username)){
+        alert("Benutzer existiert bereits!");
+        return;
+    }
+
+    users.push({username,password,role});
+    saveUsers(users);
+    alert("Registrierung erfolgreich!");
+    showLogin();
+}
+
+function login(){
+    const username = loginUser.value;
+    const password = loginPass.value;
+
+    const users = getUsers();
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if(user){
+        currentUser = user;
+        document.getElementById("currentUser").textContent = user.username;
+        loginView.classList.add("hidden");
+        dashboardView.classList.remove("hidden");
+
+        if(user.role === "admin"){
+            adminSection.classList.remove("hidden");
+            loadUsers();
+        }
+
+        loadProjects();
+    } else {
+        alert("Login fehlgeschlagen!");
+    }
+}
+
+function logout(){
+    currentUser = null;
+    dashboardView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+}
+
+function showRegister(){
+    loginView.classList.add("hidden");
+    registerView.classList.remove("hidden");
+}
+
+function showLogin(){
+    registerView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+}
+
+function loadUsers(){
+    const users = getUsers();
+    userList.innerHTML="";
+    users.forEach((u,index)=>{
+        const div = document.createElement("div");
+        div.className="card";
+        div.innerHTML=`
+            ${u.username} (${u.role})
+            <button class="danger" onclick="deleteUser(${index})">Löschen</button>
+        `;
+        userList.appendChild(div);
+    });
+}
+
+function deleteUser(index){
+    let users = getUsers();
+    users.splice(index,1);
+    saveUsers(users);
+    loadUsers();
+}
+
+function saveProject(){
+    let projects = JSON.parse(localStorage.getItem("projects")) || [];
+    projects.push({
+        user: currentUser.username,
+        name: projectName.value
+    });
+    localStorage.setItem("projects", JSON.stringify(projects));
+    loadProjects();
+    projectName.value="";
+}
+
+function loadProjects(){
+    let projects = JSON.parse(localStorage.getItem("projects")) || [];
+    projectList.innerHTML="";
+    projects.forEach(p=>{
+        const div = document.createElement("div");
+        div.className="card";
+        div.innerHTML=`${p.name} (von ${p.user})`;
+        projectList.appendChild(div);
+    });
+}
+</script>
+
+</body>
+</html>
