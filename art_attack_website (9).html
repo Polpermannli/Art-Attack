@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Art Attack</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #1a1a2e, #16213e);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .header-wrapper {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+
+    header {
+      background: #00adb5;
+      padding: 15px 25px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: 0.3s;
+      display: inline-block;
+    }
+
+    header:hover {
+      background: #00fff5;
+    }
+
+    .dropdown {
+      display: none;
+      flex-direction: column;
+      background: rgba(0,173,181,0.95);
+      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin-top: 5px;
+    }
+
+    .dropdown button {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: bold;
+      margin: 5px 0;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .dropdown button:hover {
+      color: #ffd369;
+    }
+
+    .header-wrapper:hover .dropdown {
+      display: flex;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      animation: fadeIn 0.8s ease;
+      margin: 120px auto 20px auto;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button.mainBtn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #00adb5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button.mainBtn:hover {
+      background: #00fff5;
+      transform: scale(1.05);
+    }
+
+    .hidden { display: none; }
+
+    .menu button {
+      margin: 10px 0;
+    }
+
+    .admin {
+      color: #ffd369;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .projects {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      gap: 30px;
+    }
+
+    .project {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 800px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .project img {
+      max-width: 200px;
+      border-radius: 10px;
+    }
+
+    .project-description {
+      flex: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+  <header>Art Attack 1</header>
+  <div class="dropdown">
+    <button onclick="showLoginBox()">🔑 Anmelden</button>
+    <button onclick="showRegisterBox()">📝 Registrieren</button>
+    <button onclick="window.open('https://discord.gg/FjeTfzbQnf')">💬 Discord</button>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="card hidden" id="loginBox">
+  <h2>🎨 Anmelden</h2>
+  <input type="text" id="loginUser" placeholder="Benutzername">
+  <input type="password" id="loginPass" placeholder="Passwort">
+  <button class="mainBtn" onclick="login()">Login</button>
+  <p id="loginMsg"></p>
+</div>
+
+<!-- REGISTER -->
+<div class="card hidden" id="registerBox">
+  <h2>📝 Registrieren</h2>
+  <input type="text" id="regUser" placeholder="Benutzername">
+  <input type="password" id="regPass" placeholder="Passwort">
+  <button class="mainBtn" onclick="registerAndLogin()">Registrieren</button>
+  <p id="regMsg"></p>
+</div>
+
+<!-- MENU -->
+<div class="card hidden" id="menuBox">
+  <h2>Willkommen bei Art Attack</h2>
+  <div id="adminLabel" class="admin hidden">⭐ Admin Zugang</div>
+  <div class="menu">
+    <button class="mainBtn" onclick="alert('Map Ideen kommen bald!')">🗺️ Map Ideen</button>
+    <button class="mainBtn" onclick="alert('Projekt Ideen kommen bald!')">💡 Projekt Ideen</button>
+    <button class="mainBtn" onclick="window.open('https://discord.gg/FjeTfzbQnf')">💬 Discord</button>
+    <button class="mainBtn" onclick="logout()">🚪 Logout</button>
+  </div>
+  <div class="projects" id="projectsContainer">
+    <div class="project">
+      <img src="https://i.imgur.com/N1L1gKk.png" alt="Minecraft Kirche">
+      <div class="project-description">
+        <h3>Kirche</h3>
+        <p>Diese Kirche dient um zu beten, Taufen und zu Heiraten. Sie dient auch dazu, Gespräche mit verschiedenen Leuten zu führen.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "Admin123";
+  const SESSION_DAYS = 30;
+
+  window.onload = () => {
+    const session = JSON.parse(localStorage.getItem("session"));
+    if (session) {
+      const now = new Date().getTime();
+      if (now < session.expiry) {
+        showMenu(session.isAdmin);
+      } else {
+        localStorage.removeItem("session");
+      }
+    }
+  };
+
+  function showLoginBox() {
+    loginBox.classList.remove("hidden");
+    registerBox.classList.add("hidden");
+  }
+
+  function showRegisterBox() {
+    registerBox.classList.remove("hidden");
+    loginBox.classList.add("hidden");
+  }
+
+  function registerAndLogin() {
+    const user = regUser.value;
+    const pass = regPass.value;
+    const msg = document.getElementById("regMsg");
+    if (!user || !pass) {
+      msg.textContent = "Bitte alles ausfüllen";
+      return;
+    }
+    localStorage.setItem(user, pass);
+    const isAdmin = false;
+    const expiry = new Date().getTime() + SESSION_DAYS*24*60*60*1000;
+    localStorage.setItem("session", JSON.stringify({isAdmin, expiry}));
+    showMenu(isAdmin);
+  }
+
+  function login() {
+    const user = loginUser.value;
+    const pass = loginPass.value;
+    const msg = document.getElementById("loginMsg");
+    const savedPass = localStorage.getItem(user);
+    if (savedPass === pass || pass === ADMIN_PASSWORD) {
+      const isAdmin = pass === ADMIN_PASSWORD;
+      const expiry = new Date().getTime() + SESSION_DAYS*24*60*60*1000;
+      localStorage.setItem("session", JSON.stringify({isAdmin, expiry}));
+      showMenu(isAdmin);
+    } else {
+      msg.textContent = "Login fehlgeschlagen";
+    }
+  }
+
+  function showMenu(isAdmin) {
+    loginBox.classList.add("hidden");
+    registerBox.classList.add("hidden");
+    menuBox.classList.remove("hidden");
+    if (isAdmin) adminLabel.classList.remove("hidden");
+  }
+
+  function logout() {
+    localStorage.removeItem("session");
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
