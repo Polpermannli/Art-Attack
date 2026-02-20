@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Art Attack</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(120deg, #1a1a2e, #16213e);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .header-wrapper {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-button {
+      background: #00adb5;
+      padding: 15px 25px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: 0.3s;
+      display: inline-block;
+      position: relative;
+    }
+
+    .header-button:hover {
+      background: #00fff5;
+    }
+
+    .dropdown {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: rgba(0,173,181,0.95);
+      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      margin-top: 5px;
+    }
+
+    .dropdown button {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: bold;
+      margin: 5px 0;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .dropdown button:hover {
+      color: #ffd369;
+    }
+
+    .header-button:hover .dropdown {
+      display: flex;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      animation: fadeIn 0.8s ease;
+      margin: 120px auto 20px auto;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button.mainBtn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #00adb5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    button.mainBtn:hover {
+      background: #00fff5;
+      transform: scale(1.05);
+    }
+
+    .smallBtn {
+      padding: 8px 15px;
+      background: #00adb5;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: none;
+    }
+
+    .smallBtn:hover {
+      background: #00fff5;
+    }
+
+    .hidden { display: none; }
+
+    .project-idea-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.85);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 600px;
+      z-index: 999;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      animation: fadeIn 0.8s ease;
+    }
+
+    .project-idea-popup img {
+      max-width: 100%;
+      border-radius: 15px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+  <div class="header-button">
+    Art Attack 1
+    <div class="dropdown">
+      <button onclick="showLoginBox()">🔑 Anmelden</button>
+      <button onclick="showRegisterBox()">📝 Registrieren</button>
+      <button onclick="window.open('https://discord.gg/FjeTfzbQnf')">💬 Discord</button>
+      <button class="logoutBtn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="card hidden" id="loginBox">
+  <h2>🎨 Anmelden</h2>
+  <input type="text" id="loginUser" placeholder="Benutzername">
+  <input type="password" id="loginPass" placeholder="Passwort">
+  <button class="mainBtn" onclick="login()">Login</button>
+  <p id="loginMsg"></p>
+</div>
+
+<!-- REGISTER -->
+<div class="card hidden" id="registerBox">
+  <h2>📝 Registrieren</h2>
+  <input type="text" id="regUser" placeholder="Benutzername">
+  <input type="password" id="regPass" placeholder="Passwort">
+  <button class="mainBtn" onclick="registerAndLogin()">Registrieren</button>
+  <p id="regMsg"></p>
+</div>
+
+<!-- MENU -->
+<div class="card hidden" id="menuBox">
+  <h2>Willkommen bei Art Attack</h2>
+  <div id="adminLabel" class="admin hidden">⭐ Admin Zugang</div>
+  <div class="menu" id="mainMenu">
+    <button class="mainBtn" onclick="showProjectIdeaPopup()">💡 Projekt Ideen</button>
+    <button class="mainBtn" onclick="alert('Map Ideen kommen bald!')">🗺️ Map Ideen</button>
+  </div>
+</div>
+
+<!-- PROJECT IDEA POPUP -->
+<div class="project-idea-popup" id="projectIdeaPopup">
+  <button class="smallBtn" id="backBtnPopup" onclick="closeProjectIdeaPopup()">Zurück</button>
+  <img src="/mnt/data/15ebbeaf-de90-4424-bf72-93a09fddf8bf.png" alt="Minecraft Kirche">
+  <h2>Kirche</h2>
+  <p style="margin-top:10px;">Diese Kirche dient um zu beten, Taufen und zu Heiraten. Sie dient auch dazu, Gespräche mit verschiedenen Leuten zu führen.</p>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "Admin123";
+  const SESSION_DAYS = 30;
+
+  window.onload = () => {
+    const session = JSON.parse(localStorage.getItem("session"));
+    if (session) {
+      const now = new Date().getTime();
+      if (now < session.expiry) {
+        showMenu(session.isAdmin);
+      } else {
+        localStorage.removeItem("session");
+      }
+    }
+  };
+
+  function showLoginBox() {
+    loginBox.classList.remove("hidden");
+    registerBox.classList.add("hidden");
+  }
+
+  function showRegisterBox() {
+    registerBox.classList.remove("hidden");
+    loginBox.classList.add("hidden");
+  }
+
+  function registerAndLogin() {
+    const user = regUser.value;
+    const pass = regPass.value;
+    const msg = document.getElementById("regMsg");
+    if (!user || !pass) { msg.textContent = "Bitte alles ausfüllen"; return; }
+    localStorage.setItem(user, pass);
+    const isAdmin = false;
+    const expiry = new Date().getTime() + SESSION_DAYS*24*60*60*1000;
+    localStorage.setItem("session", JSON.stringify({isAdmin, expiry}));
+    showMenu(isAdmin);
+  }
+
+  function login() {
+    const user = loginUser.value;
+    const pass = loginPass.value;
+    const msg = document.getElementById("loginMsg");
+    const savedPass = localStorage.getItem(user);
+    if (savedPass === pass || pass === ADMIN_PASSWORD) {
+      const isAdmin = pass === ADMIN_PASSWORD;
+      const expiry = new Date().getTime() + SESSION_DAYS*24*60*60*1000;
+      localStorage.setItem("session", JSON.stringify({isAdmin, expiry}));
+      showMenu(isAdmin);
+    } else { msg.textContent = "Login fehlgeschlagen"; }
+  }
+
+  function showMenu(isAdmin) {
+    loginBox.classList.add("hidden");
+    registerBox.classList.add("hidden");
+    menuBox.classList.remove("hidden");
+    projectIdeaPopup.style.display = 'none';
+    if (isAdmin) adminLabel.classList.remove("hidden");
+  }
+
+  function logout() {
+    localStorage.removeItem("session");
+    location.reload();
+  }
+
+  function showProjectIdeaPopup() {
+    menuBox.classList.add("hidden");
+    projectIdeaPopup.style.display = 'block';
+    backBtnPopup.style.display = 'inline-block';
+  }
+
+  function closeProjectIdeaPopup() {
+    projectIdeaPopup.style.display = 'none';
+    menuBox.classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
