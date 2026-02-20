@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Benutzerliste weltweit</title>
+<style>
+body { font-family: Arial, sans-serif; background: #667eea; color:white; text-align:center; padding:20px;}
+input,button{padding:8px;margin:5px;border-radius:5px; border:none;}
+button{cursor:pointer; background:white; color:#667eea; font-weight:bold;}
+.card{background: rgba(255,255,255,0.2); padding:10px; margin:5px; border-radius:5px;}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+
+<h1>Benutzerliste</h1>
+
+<div id="registerDiv">
+<input id="usernameInput" placeholder="Dein Name">
+<button onclick="registerUser()">Anmelden / Registrieren</button>
+<p id="message"></p>
+</div>
+
+<div id="userListDiv" class="hidden">
+<h2>Alle Benutzer</h2>
+<div id="userList"></div>
+</div>
+
+<script>
+let API = "http://localhost:5000/api"; // später Render URL
+
+async function registerUser(){
+    const username = document.getElementById("usernameInput").value.trim();
+    if(!username){ document.getElementById("message").textContent="Bitte Name eingeben"; return; }
+
+    const res = await fetch(API+"/register",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username})
+    });
+    const data = await res.json();
+    if(data.error){ document.getElementById("message").textContent = data.error; return; }
+
+    showUserList(data.users);
+}
+
+function showUserList(users){
+    document.getElementById("registerDiv").classList.add("hidden");
+    document.getElementById("userListDiv").classList.remove("hidden");
+    const listDiv = document.getElementById("userList");
+    listDiv.innerHTML = "";
+    users.forEach(u=>{
+        const card = document.createElement("div");
+        card.className="card";
+        card.textContent = u.username;
+        listDiv.appendChild(card);
+    });
+}
+
+// Optional: alle 5 Sekunden aktualisieren
+setInterval(async ()=>{
+    if(!document.getElementById("userListDiv").classList.contains("hidden")){
+        const res = await fetch(API+"/users");
+        const data = await res.json();
+        showUserList(data);
+    }
+}, 5000);
+</script>
+
+</body>
+</html>
